@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Static route table for the NUCES Campus Network.
+    Used by Ipv4NetworkConfigurator in the Static routing scenario.
+
+    IP Address Plan:
+      Core Router:        10.0.0.254
+      DNS Server:         10.0.0.1
+      App Server:         10.0.0.2
+
+      SE  subnet:         192.168.1.0/24   SE Router: 192.168.1.1
+      EE  subnet:         192.168.2.0/24   EE Router: 192.168.2.1
+      BBA subnet:         192.168.3.0/24   BBA Router: 192.168.3.1
+      ADM subnet:         192.168.4.0/24   Admin Router: 192.168.4.1
+
+      SE  Hosts:  192.168.1.10 / .11 / .12
+      EE  Hosts:  192.168.2.10 / .11 / .12
+      BBA Hosts:  192.168.3.10 / .11 / .12
+      ADM Hosts:  192.168.4.10 / .11 / .12
+-->
+<config>
+
+    <!-- ==================== IP ADDRESS ASSIGNMENTS ==================== -->
+
+    <!-- Core Router interfaces -->
+    <interface hosts="coreRouter" towards="seRouter"    address="10.1.1.1"   netmask="255.255.255.252"/>
+    <interface hosts="coreRouter" towards="eeRouter"    address="10.1.2.1"   netmask="255.255.255.252"/>
+    <interface hosts="coreRouter" towards="bbaRouter"   address="10.1.3.1"   netmask="255.255.255.252"/>
+    <interface hosts="coreRouter" towards="adminRouter" address="10.1.4.1"   netmask="255.255.255.252"/>
+    <interface hosts="coreRouter" towards="dnsServer"   address="10.0.0.254" netmask="255.255.255.0"/>
+    <interface hosts="coreRouter" towards="appServer"   address="10.0.0.253" netmask="255.255.255.0"/>
+
+    <!-- Department Router WAN-side interfaces (towards Core) -->
+    <interface hosts="seRouter"    towards="coreRouter"  address="10.1.1.2"   netmask="255.255.255.252"/>
+    <interface hosts="eeRouter"    towards="coreRouter"  address="10.1.2.2"   netmask="255.255.255.252"/>
+    <interface hosts="bbaRouter"   towards="coreRouter"  address="10.1.3.2"   netmask="255.255.255.252"/>
+    <interface hosts="adminRouter" towards="coreRouter"  address="10.1.4.2"   netmask="255.255.255.252"/>
+
+    <!-- Department Router LAN-side interfaces (towards hosts) -->
+    <interface hosts="seRouter"    towards="seHost*"     address="192.168.1.1" netmask="255.255.255.0"/>
+    <interface hosts="eeRouter"    towards="eeHost*"     address="192.168.2.1" netmask="255.255.255.0"/>
+    <interface hosts="bbaRouter"   towards="bbaHost*"    address="192.168.3.1" netmask="255.255.255.0"/>
+    <interface hosts="adminRouter" towards="adminHost*"  address="192.168.4.1" netmask="255.255.255.0"/>
+
+    <!-- Servers -->
+    <interface hosts="dnsServer"   towards="coreRouter"  address="10.0.0.1"   netmask="255.255.255.0"/>
+    <interface hosts="appServer"   towards="coreRouter"  address="10.0.0.2"   netmask="255.255.255.0"/>
+
+    <!-- SE Department Hosts -->
+    <interface hosts="seHost1"  towards="seRouter" address="192.168.1.10" netmask="255.255.255.0"/>
+    <interface hosts="seHost2"  towards="seRouter" address="192.168.1.11" netmask="255.255.255.0"/>
+    <interface hosts="seHost3"  towards="seRouter" address="192.168.1.12" netmask="255.255.255.0"/>
+
+    <!-- EE Department Hosts -->
+    <interface hosts="eeHost1"  towards="eeRouter" address="192.168.2.10" netmask="255.255.255.0"/>
+    <interface hosts="eeHost2"  towards="eeRouter" address="192.168.2.11" netmask="255.255.255.0"/>
+    <interface hosts="eeHost3"  towards="eeRouter" address="192.168.2.12" netmask="255.255.255.0"/>
+
+    <!-- BBA Department Hosts -->
+    <interface hosts="bbaHost1" towards="bbaRouter" address="192.168.3.10" netmask="255.255.255.0"/>
+    <interface hosts="bbaHost2" towards="bbaRouter" address="192.168.3.11" netmask="255.255.255.0"/>
+    <interface hosts="bbaHost3" towards="bbaRouter" address="192.168.3.12" netmask="255.255.255.0"/>
+
+    <!-- Admin Department Hosts -->
+    <interface hosts="adminHost1" towards="adminRouter" address="192.168.4.10" netmask="255.255.255.0"/>
+    <interface hosts="adminHost2" towards="adminRouter" address="192.168.4.11" netmask="255.255.255.0"/>
+    <interface hosts="adminHost3" towards="adminRouter" address="192.168.4.12" netmask="255.255.255.0"/>
+
+    <!-- ==================== STATIC ROUTES ==================== -->
+
+    <!-- Core Router: knows all department subnets and server subnet -->
+    <route hosts="coreRouter" destination="192.168.1.0" netmask="255.255.255.0" gateway="10.1.1.2" interface="eth0"/>
+    <route hosts="coreRouter" destination="192.168.2.0" netmask="255.255.255.0" gateway="10.1.2.2" interface="eth1"/>
+    <route hosts="coreRouter" destination="192.168.3.0" netmask="255.255.255.0" gateway="10.1.3.2" interface="eth2"/>
+    <route hosts="coreRouter" destination="192.168.4.0" netmask="255.255.255.0" gateway="10.1.4.2" interface="eth3"/>
+
+    <!-- SE Router: default route to Core; knows own subnet locally -->
+    <route hosts="seRouter"    destination="0.0.0.0"     netmask="0.0.0.0"         gateway="10.1.1.1" interface="eth0"/>
+
+    <!-- EE Router: default route to Core -->
+    <route hosts="eeRouter"    destination="0.0.0.0"     netmask="0.0.0.0"         gateway="10.1.2.1" interface="eth0"/>
+
+    <!-- BBA Router: default route to Core -->
+    <route hosts="bbaRouter"   destination="0.0.0.0"     netmask="0.0.0.0"         gateway="10.1.3.1" interface="eth0"/>
+
+    <!-- Admin Router: default route to Core -->
+    <route hosts="adminRouter" destination="0.0.0.0"     netmask="0.0.0.0"         gateway="10.1.4.1" interface="eth0"/>
+
+    <!-- Hosts: default gateway is their department router -->
+    <route hosts="seHost*"     destination="0.0.0.0"     netmask="0.0.0.0"         gateway="192.168.1.1" interface="eth0"/>
+    <route hosts="eeHost*"     destination="0.0.0.0"     netmask="0.0.0.0"         gateway="192.168.2.1" interface="eth0"/>
+    <route hosts="bbaHost*"    destination="0.0.0.0"     netmask="0.0.0.0"         gateway="192.168.3.1" interface="eth0"/>
+    <route hosts="adminHost*"  destination="0.0.0.0"     netmask="0.0.0.0"         gateway="192.168.4.1" interface="eth0"/>
+
+    <!-- Servers: default gateway is Core Router -->
+    <route hosts="dnsServer"   destination="0.0.0.0"     netmask="0.0.0.0"         gateway="10.0.0.254" interface="eth0"/>
+    <route hosts="appServer"   destination="0.0.0.0"     netmask="0.0.0.0"         gateway="10.0.0.254" interface="eth0"/>
+
+</config>

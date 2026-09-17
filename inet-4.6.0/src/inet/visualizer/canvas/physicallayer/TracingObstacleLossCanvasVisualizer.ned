@@ -1,0 +1,26 @@
+//
+// Copyright (C) 2020 OpenSim Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+//
+
+
+package inet.visualizer.canvas.physicallayer;
+
+import inet.visualizer.base.TracingObstacleLossVisualizerBase;
+import inet.visualizer.contract.ITracingObstacleLossVisualizer;
+
+//
+// Visualizes obstacle loss on a 2D canvas. It displays a line at
+// the intersections of signal propagation paths with physical objects, and
+// normal vectors of physical object faces at intersection points.
+//
+// @see ~TracingObstacleLossOsgVisualizer, ~TracingObstacleLossVisualizer, ~TracingObstacleLossVisualizerBase, ~ITracingObstacleLossVisualizer
+//
+simple TracingObstacleLossCanvasVisualizer extends TracingObstacleLossVisualizerBase like ITracingObstacleLossVisualizer
+{
+    parameters:
+        double zIndex = default(0); // Determines the drawing order of figures relative to other visualizers
+        @class(TracingObstacleLossCanvasVisualizer);
+}
+

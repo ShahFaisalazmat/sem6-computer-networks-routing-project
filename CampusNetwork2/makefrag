@@ -1,0 +1,9 @@
+# makefrag
+# This file is included by the generated Makefile.
+# It links the CampusNetwork project against the INET framework library.
+
+INCLUDE_PATH += -I$(INET_PROJ)/src
+LIBS         += -L$(INET_PROJ)/src -lINET$(D)
+
+# Tell the linker where to find INET at runtime
+CFLAGS       += -DINET_IMPORT

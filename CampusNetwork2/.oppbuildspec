@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    OMNeT++ IDE build specification for CampusNetwork project.
+    This file tells the IDE how to compile and link the project,
+    and which referenced projects (INET) to include.
+-->
+<buildspec>
+    <dir path="." type="makemake">
+        <makemakeoptions
+            target="CampusNetwork2"
+            type="exe"
+            defaultmode="debug"
+            outdir="out"
+            force="true"
+            submakeDirs=""
+            dllsymbol=""
+            compileForDll="false"
+            userIncludes=""
+            userLibs=""
+            userLibDirs=""
+            userFragmentFiles="makefrag"
+            extraArgs=""
+            ignoreNedFiles=""
+            metaRecurse="false"
+            metaExportLibrary="false"
+            metaUseExportedLibs="true"
+            metaFeatureCFlags="true"
+            metaFeatureLDFlags="true">
+        </makemakeoptions>
+    </dir>
+</buildspec>

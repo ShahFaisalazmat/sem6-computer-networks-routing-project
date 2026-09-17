@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    failscenario.xml
+    NUCES Campus Network — SE-to-Core Link Failure Scenario
+
+    Controlled by LinkController.cc via self-scheduled messages.
+    Affected link: seRouter.ethg[0] <-> coreRouter.ethg[0]
+    (backbone connections are listed FIRST in campus.ned, guaranteeing index 0)
+-->
+<failureScenario network="CampusNetwork" link="seRouter.ethg[0]--coreRouter.ethg[0]">
+
+    <timeline>
+
+        <event time="0s"   type="SIM_START">
+            Simulation begins. Ipv4NetworkConfigurator assigns all IP addresses.
+            RIP/OSPF routers start neighbor discovery. TrafficGen waits for startTime.
+        </event>
+
+        <event time="20s"  type="TRAFFIC_START">
+            All 12 hosts begin sending 512-byte UDP packets to appServer (10.0.0.2:5000).
+            Baseline PDR and end-to-end delay measurements begin.
+        </event>
+
+        <event time="60s"  type="LINK_FAILURE">
+            LinkController calls:
+              seRouter.ethg$o[0].disconnect()    — seRouter -> coreRouter severed
+              coreRouter.ethg$o[0].disconnect()  — coreRouter -> seRouter severed
+
+            Expected behavior per protocol:
+            - STATIC : seHost1-3 packets dropped immediately (no alternate route).
+                       Other departments unaffected.
+            - RIP    : Link failure detected when update timer expires (~30s).
+                       seHost1-3 lose connectivity until RIP reconverges (~t=90s worst case).
+            - OSPF   : Neighbor declared dead after deadInterval=40s (by ~t=100s).
+                       SPF recalculation runs immediately. Reconverges by ~t=100-105s.
+                       Faster recovery than RIP.
+        </event>
+
+        <event time="120s" type="LINK_RECOVERY">
+            LinkController recreates cDatarateChannel (100Mbps, 2ms, PER=0.001) and calls:
+              seOut->connectTo(coreIn, ch1);   ch1->callInitialize();
+              coreOut->connectTo(seIn, ch2);   ch2->callInitialize();
+
+            Expected behavior per protocol:
+            - STATIC : Physical layer restored; seHost1-3 resume immediately.
+            - RIP    : New LSA broadcast; full convergence within one update interval (30s).
+                       Traffic resumes by ~t=150s.
+            - OSPF   : LSA flood on link-up; SPF within helloInterval (10s).
+                       Traffic resumes by ~t=130s.
+        </event>
+
+        <event time="170s" type="TRAFFIC_STOP">
+            All TrafficGen senders stop. Final scalars recorded:
+            packetsSent, packetsReceived, PDR_%.
+        </event>
+
+        <event time="180s" type="SIM_END">
+            Simulation ends. Results written to results/ folder.
+            Open .vec/.sca files in OMNeT++ Analysis Tool to compare
+            PDR and endToEndDelay across all six configurations.
+        </event>
+
+    </timeline>
+
+    <observationGuide>
+        1. Filter event log by "linkController" to confirm fail/recover messages.
+        2. Filter by "seRouter" — watch packetDropped spike at t=60s.
+        3. For RIP: search "rip" entries for route invalidation after t=60s.
+        4. For OSPF: search "ospf" for LSA flood starting ~t=60-100s.
+        5. Plot endToEndDelay:vector for seHost* — gap width = outage duration.
+        6. Compare PDR_% scalars: OSPF_CBR should have highest PDR for seHosts,
+           Static_CBR lowest (no recovery), RIP_CBR in between.
+    </observationGuide>
+
+</failureScenario>

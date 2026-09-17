@@ -1,0 +1,42 @@
+# Build artifacts
+*.exe
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.pdb
+*.ilk
+*.exp
+out/
+build/
+
+# OMNeT++ generated files
+*_m.cc
+*_m.h
+*.vec
+*.sca
+*.vci
+*.jvec
+*.jsca
+eventlog/
+
+# Simulation results (usually large / regenerable — remove this if you WANT to keep results in the repo)
+results/
+
+# IDE / editor files
+.metadata/
+.settings/
+*.launch
+.project
+.cproject
+*.swp
+
+# OS-specific junk
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Backup files
+*.bak
+*~
